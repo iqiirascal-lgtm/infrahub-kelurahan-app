@@ -21,9 +21,11 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-1 h-fit">
-                    <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">📝 Buat Pengaduan Baru</h3>
+                    <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">Buat Pengaduan Baru</h3>
                     <form action="{{ route('report.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf
+                        
+                        <button type="submit">Kirim Laporan</button>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 uppercase">Judul Pengaduan</label>
                             <input type="text" name="title" class="mt-1 block w-full border-gray-200 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 text-sm" placeholder="Contoh: Tiang Lampu Roboh" required>
