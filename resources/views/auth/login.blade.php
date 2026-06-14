@@ -17,8 +17,13 @@
     <div class="w-full max-w-md z-10 px-4 py-12">
         
         <div class="text-center mb-8">
-            <span class="text-4xl">🏢</span>
-            <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
+            <div class="flex justify-center mb-4">
+                <a href="/">
+                    <x-application-logo class="h-14 w-auto" />
+                </a>
+            </div>
+            
+            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">
                 Selamat Datang Kembali
             </h2>
             <p class="mt-2 text-sm text-slate-500">

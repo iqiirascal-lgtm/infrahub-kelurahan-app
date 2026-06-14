@@ -62,4 +62,10 @@ public function index()
         $report->increment('upvotes_count');
         return redirect()->back()->with('success', 'Terima kasih! Dukungan Anda terhadap laporan ini telah dicatat.');
     }
+
+    public function markAllRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back()->with('success', 'Semua notifikasi telah ditandai sebagai dibaca.');
+    }
 }

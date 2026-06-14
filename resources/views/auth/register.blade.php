@@ -17,8 +17,12 @@
     <div class="w-full max-w-md z-10 px-4 py-8">
         
         <div class="text-center mb-6">
-            <span class="text-4xl">🏢</span>
-            <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900">
+            <div class="flex justify-center mb-4">
+                <a href="/">
+                    <x-application-logo class="h-14 w-auto" />
+                </a>
+            </div>
+            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">
                 Daftar Akun Warga
             </h2>
             <p class="mt-2 text-sm text-slate-500">
@@ -88,7 +92,7 @@
                         <span class="px-2 bg-white text-slate-400 font-semibold tracking-wider">Atau daftar dengan</span>
                     </div>
                 </div>
-            
+
                 <div class="mt-6 grid grid-cols-2 gap-3">
                     <a href="#" class="inline-flex justify-center py-2.5 px-4 border border-slate-200 rounded-xl bg-white text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 transition">
                         <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -107,3 +111,19 @@
                         <span class="font-bold text-xs text-slate-700 self-center">Facebook</span>
                     </a>
                 </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-xs text-slate-500">
+                    Sudah punya akun? 
+                    <a href="{{ route('login') }}" class="font-bold text-indigo-600 hover:text-indigo-700 ml-1">
+                        Masuk Disini
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
