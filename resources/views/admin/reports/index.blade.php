@@ -44,7 +44,7 @@
                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                             <span>Kategori Fasilitas</span>
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                        <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                             <span>Data Warga</span>
                         </a>
@@ -119,7 +119,7 @@
            class="text-sm rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
     
     {{-- Filter Status --}}
-    <select name="status" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+    <select name="status" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white">
         <option value="">Semua Status</option>
         <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>🟡 Menunggu</option>
         <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>🟠 Diproses</option>
@@ -139,7 +139,7 @@
     @endif
 
     {{-- Sort --}}
-    <select name="sort" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+    <select name="status" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white">
         <option value="latest" {{ request('sort') == 'latest' || !request('sort') ? 'selected' : '' }}>Terbaru</option>
         <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama</option>
     </select>
@@ -186,7 +186,7 @@
                                         <td class="px-6 py-4">
                                             <div class="mb-1.5">
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wider">
-                                                    🛣️ {{ $report->category->name ?? 'Umum' }}
+                                                    {{ $report->category->name ?? 'Umum' }}
                                                 </span>
                                             </div>
                                             <div class="text-sm font-bold text-slate-800 mt-1.5">{{ $report->title }}</div>
@@ -196,7 +196,7 @@
                                             @if($report->photo)
                                                 <div class="mt-2">
                                                     <a href="{{ asset('storage/' . $report->photo) }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-800">
-                                                        📷 Lihat Foto Bukti
+                                                        Lihat Foto Bukti
                                                     </a>
                                                 </div>
                                             @endif

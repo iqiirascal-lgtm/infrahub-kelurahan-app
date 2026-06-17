@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacilityCategoryController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard Admin
-    Route::get('/dashboard', [DashboardController::class, 'manageReports'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard'); 
     
     // Manajemen Laporan
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
@@ -63,6 +64,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     // Profile Admin (reuse controller ProfileController)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Manajemen Warga
+    Route::get('/warga', [UserController::class, 'index'])->name('users.index');
+    Route::get('/warga/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::patch('/warga/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/warga/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
 

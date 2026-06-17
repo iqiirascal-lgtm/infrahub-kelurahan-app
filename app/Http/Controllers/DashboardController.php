@@ -33,6 +33,29 @@ class DashboardController extends Controller
         return view('dashboard-warga', compact('reports'));
     }
 
+    /**
+     * Dashboard khusus Admin - menampilkan statistik overview
+     */
+    public function adminDashboard()
+    {
+        $reports = \App\Models\Report::all();
+        
+        $stats = [
+            'total' => $reports->count(),
+            'menunggu' => $reports->where('status', 'menunggu')->count(),
+            'diproses' => $reports->where('status', 'diproses')->count(),
+            'selesai' => $reports->where('status', 'selesai')->count(),
+        ];
+
+        // Ambil 5 laporan terbaru untuk widget "Laporan Terbaru"
+        $recentReports = \App\Models\Report::with(['user', 'category'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('dashboard-admin', compact('stats', 'recentReports', 'reports'));
+    }
+
     public function storeReport(Request $request)
 {
     $validated = $request->validate([
