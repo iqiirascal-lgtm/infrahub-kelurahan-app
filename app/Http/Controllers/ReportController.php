@@ -2,25 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Report;
-use App\Notifications\ReportStatusUpdated;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function updateStatus(Request $request, $id)
+    // 1. Menampilkan daftar laporan dengan filter status
+    public function index(Request $request)
     {
-        // 1. Cari data laporan
-        $report = Report::findOrFail($id);
+        $query = Report::query()->latest();
 
-        // 2. Update status
-        $report->status = $request->status;
-        $report->save();
+        // Filter berdasarkan status jika ada input
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
-        // 3. Kirim notifikasi ke user (pelapor)
-       // $report->user->notify(new ReportStatusUpdated($report));
+        $reports = $query->paginate(10);
+        return view('admin.reports.index', compact('reports'));
+    }
 
-        // 4. Kembali ke halaman sebelumnya dengan pesan sukses
-        return back()->with('success', 'Status laporan berhasil diperbarui!');
+    // 2. Update Status Laporan
+    public function updateStatus(Request $request, Report $report)
+    {
+        $request->validate(['status' => 'required|in:menunggu,diproses,selesai']);
+        
+        $report->update(['status' => $request->status]);
+
+        return redirect()->back()->with('success', 'Status laporan berhasil diperbarui!');
     }
 }

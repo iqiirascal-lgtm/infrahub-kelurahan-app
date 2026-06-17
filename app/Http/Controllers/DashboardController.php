@@ -8,23 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-public function index()
-{
-    // 1. Ambil role dari pengguna yang sedang login
-    $role = Auth::user()->role;
+    public function index()
+    {
+        $user = Auth::user();
 
-    // 2. Alihkan tampilan berdasarkan role
-    if ($role === 'admin') {
-        // Ambil SEMUA laporan dari database untuk Dashboard Admin
-        $reports = Report::latest()->get(); 
-        return view('dashboard-admin', compact('reports'));
+        // 1. Jika Admin
+        if ($user->role === 'admin') {
+            // Kita bungkus data dalam satu array agar rapi
+            $data = [
+                'total'    => Report::count(),
+                'menunggu' => Report::where('status', 'menunggu')->count(),
+                'proses'   => Report::where('status', 'proses')->count(),
+                'selesai'  => Report::where('status', 'selesai')->count(),
+                'reports'  => Report::latest()->take(10)->get(), // Ambil 10 terbaru
+            ];
+
+            return view('dashboard-admin', compact('data'));
+        
+        
+        }
+
+        // 2. Jika Warga
+        $reports = Report::where('user_id', $user->id)->latest()->get();
+        return view('dashboard-warga', compact('reports'));
     }
-
-    // Jika warga, hanya ambil laporan milik dia sendiri (berdasarkan user_id)
-    $reports = Report::where('user_id', Auth::id())->latest()->get();
-    
-    return view('dashboard-warga', compact('reports'));
-}
 
     public function storeReport(Request $request)
     {
@@ -67,5 +74,16 @@ public function index()
     {
         auth()->user()->unreadNotifications->markAsRead();
         return back()->with('success', 'Semua notifikasi telah ditandai sebagai dibaca.');
+    }
+
+    public function manageReports()
+    {
+        // Pastikan hanya admin yang bisa akses
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        $reports = Report::latest()->get();
+        return view('admin.reports.index', compact('reports'));
     }
 }

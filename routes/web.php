@@ -15,10 +15,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/report/{report}/status', [ReportController::class, 'updateStatus'])->name('report.status');
     Route::post('/report/{report}/upvote', [DashboardController::class, 'upvote'])->name('report.upvote');
     Route::post('/notifications/read-all', [DashboardController::class, 'markAllRead'])->name('notifications.read');
+    Route::get('/admin/laporan', [ReportController::class, 'index'])->name('admin.reports.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('admin')->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+    Route::patch('/reports/{report}/status', [ReportController::class, 'updateStatus'])->name('admin.reports.updateStatus');
+    Route::get('/admin/reports', [DashboardController::class, 'manageReports'])->name('admin.reports');
+    Route::patch('/report/{report}/status', [DashboardController::class, 'updateStatus'])->name('report.status');
+    Route::patch('/admin/laporan/{report}/status', [ReportController::class, 'updateStatus'])->name('report.status');
+    
+});
 });
 
 require __DIR__.'/auth.php';
