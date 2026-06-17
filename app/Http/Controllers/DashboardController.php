@@ -34,27 +34,33 @@ class DashboardController extends Controller
     }
 
     public function storeReport(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string',
-            'location_rtrw' => 'required|string|max:50',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'category' => 'required|exists:facility_categories,id', // Ubah ke exists
+        'location_rtrw' => 'required|string|max:100',
+        'description' => 'required|string',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('reports', 'public');
-            $validated['photo'] = $path;
-        }
-
-        $validated['user_id'] = Auth::id();
-        $validated['status'] = 'menunggu';
-
-        Report::create($validated);
-
-        return redirect()->route('dashboard')->with('success', 'Laporan Anda sukses dikirim ke kelurahan!');
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('reports', 'public');
     }
+
+    Report::create([
+        'user_id' => auth()->id(),
+        'facility_category_id' => $validated['category'], // Ubah ke facility_category_id
+        'title' => $validated['title'],
+        'description' => $validated['description'],
+        'location_rtrw' => $validated['location_rtrw'],
+        'photo' => $photoPath,
+        'status' => 'menunggu',
+        'upvotes_count' => 0,
+    ]);
+
+    return back()->with('success', 'Laporan berhasil dikirim!');
+}
 
     public function updateStatus(Request $request, Report $report)
     {

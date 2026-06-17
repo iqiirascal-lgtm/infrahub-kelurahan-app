@@ -26,16 +26,21 @@
                 <div>
                     <p class="px-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Manajemen</p>
                     <div class="space-y-1">
-                        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
                             <span>Dashboard</span>
                         </a>
+
                         <a href="{{ route('admin.reports.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-50/30 text-indigo-700 font-bold relative group border border-indigo-100">
                             <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-500 rounded-r-full"></span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
                             <span>Kelola Laporan</span>
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                        <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-indigo-600 transition-colors">
                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                             <span>Kategori Fasilitas</span>
                         </a>
@@ -69,6 +74,27 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
                 <h1 class="text-lg font-bold text-slate-800">Manajemen Laporan</h1>
+                
+                <div class="flex items-center gap-3">
+                    <div class="hidden md:flex items-center gap-4 text-xs font-bold">
+                        <div class="flex items-center gap-2 text-slate-500">
+                            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                            Total: {{ $reports->count() }}
+                        </div>
+                        <div class="flex items-center gap-2 text-amber-600">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                            Menunggu: {{ $reports->where('status', 'menunggu')->count() }}
+                        </div>
+                        <div class="flex items-center gap-2 text-orange-600">
+                            <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                            Diproses: {{ $reports->where('status', 'diproses')->count() }}
+                        </div>
+                        <div class="flex items-center gap-2 text-emerald-600">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            Selesai: {{ $reports->where('status', 'selesai')->count() }}
+                        </div>
+                    </div>
+                </div>
             </header>
 
             <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
@@ -86,20 +112,48 @@
                             <p class="text-xs text-slate-400 mt-1">Gunakan filter untuk mencari berdasarkan status laporan.</p>
                         </div>
                         
-                        <form action="{{ route('admin.reports.index') }}" method="GET" class="flex items-center gap-2">
-                            <select name="status" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Semua Status</option>
-                                <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                                <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            </select>
-                            <button type="submit" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-bold py-2 px-4 rounded-lg transition-colors">
-                                Filter
-                            </button>
-                            @if(request('status'))
-                                <a href="{{ route('admin.reports.index') }}" class="text-xs text-red-500 font-bold hover:underline">Reset</a>
-                            @endif
-                        </form>
+                        <form action="{{ route('admin.reports.index') }}" method="GET" class="flex flex-wrap items-center gap-2">
+    {{-- Search --}}
+    <input type="text" name="search" value="{{ request('search') }}" 
+           placeholder="🔍 Cari laporan..." 
+           class="text-sm rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+    
+    {{-- Filter Status --}}
+    <select name="status" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+        <option value="">Semua Status</option>
+        <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>🟡 Menunggu</option>
+        <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>🟠 Diproses</option>
+        <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>🟢 Selesai</option>
+    </select>
+
+    {{-- Filter Kategori (tampil jika ada kategori) --}}
+    @if(isset($categories) && $categories->count() > 0)
+        <select name="category" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="">Semua Kategori</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->name }}" {{ request('category') == $cat->name ? 'selected' : '' }}>
+                    {{ $cat->name }}
+                </option>
+            @endforeach
+        </select>
+    @endif
+
+    {{-- Sort --}}
+    <select name="sort" class="text-sm font-semibold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+        <option value="latest" {{ request('sort') == 'latest' || !request('sort') ? 'selected' : '' }}>Terbaru</option>
+        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama</option>
+    </select>
+
+    <button type="submit" class="bg-indigo-600 text-white text-sm font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
+        Filter
+    </button>
+    
+    @if(request()->hasAny(['search', 'status', 'category', 'sort']))
+        <a href="{{ route('admin.reports.index') }}" class="text-xs text-red-500 font-bold hover:underline">
+            Reset
+        </a>
+    @endif
+</form>
                     </div>
                     
                     <div class="overflow-x-auto">
@@ -115,23 +169,48 @@
                                 @forelse($reports as $report)
                                     <tr class="hover:bg-slate-50 transition-colors">
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-bold text-slate-900">{{ $report->user->name }}</div>
-                                            <div class="text-xs text-indigo-600 font-bold">{{ $report->location_rtrw }}</div>
-                                            <div class="text-[10px] text-slate-400 mt-1">{{ $report->created_at->format('d M Y, H:i') }}</div>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 text-white flex items-center justify-center font-bold text-xs">
+                                                    {{ substr($report->user->name ?? 'U', 0, 1) }}
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-bold text-slate-900">{{ $report->user->name ?? 'User' }}</div>
+                                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                                        {{ $report->location_rtrw }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 mt-2 ml-12">{{ $report->created_at->format('d M Y, H:i') }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-[10px] font-extrabold text-emerald-600 uppercase">{{ $report->category }}</div>
-                                            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ $report->title }}</div>
-                                            </td>
+                                            <div class="mb-1.5">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 uppercase tracking-wider">
+                                                    🛣️ {{ $report->category->name ?? 'Umum' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-sm font-bold text-slate-800 mt-1.5">{{ $report->title }}</div>
+                                            <div class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed max-w-sm">
+                                                {{ $report->description }}
+                                            </div>
+                                            @if($report->photo)
+                                                <div class="mt-2">
+                                                    <a href="{{ asset('storage/' . $report->photo) }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-800">
+                                                        📷 Lihat Foto Bukti
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4">
-                                            <form action="{{ route('report.status', $report->id) }}" method="POST" class="flex gap-2">
+                                            <form action="{{ route('admin.reports.updateStatus', $report->id) }}" method="POST" class="flex flex-col gap-2">
                                                 @csrf @method('PATCH')
                                                 <select name="status" class="text-xs font-bold rounded-lg border-slate-200 shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500">
                                                     <option value="menunggu" {{ $report->status == 'menunggu' ? 'selected' : '' }}>🟡 Menunggu</option>
                                                     <option value="diproses" {{ $report->status == 'diproses' ? 'selected' : '' }}>🟠 Diproses</option>
                                                     <option value="selesai" {{ $report->status == 'selesai' ? 'selected' : '' }}>🟢 Selesai</option>
                                                 </select>
-                                                <button type="submit" class="bg-indigo-600 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">
+                                                <button type="submit" class="bg-indigo-600 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-1">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                     Update
                                                 </button>
                                             </form>
@@ -149,7 +228,7 @@
                         </table>
                     </div>
                     
-                    @if($reports->hasPages())
+                    @if(method_exists($reports, 'hasPages') && $reports->hasPages())
                         <div class="p-4 border-t border-slate-100 bg-slate-50/50">
                             {{ $reports->links() }}
                         </div>
