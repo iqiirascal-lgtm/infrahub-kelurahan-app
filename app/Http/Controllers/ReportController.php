@@ -71,44 +71,37 @@ class ReportController extends Controller
      * Update status laporan (dengan audit trail sederhana)
      */
     public function updateStatus(Request $request, Report $report)
-    {
-        // Validasi input
-        $validated = $request->validate([
-            'status' => 'required|in:menunggu,diproses,selesai',
-            'admin_notes' => 'nullable|string|max:500',
-        ]);
+{
+    $request->validate(['status' => 'required|in:menunggu,diproses,selesai']);
+    
+    $oldStatus = $report->status;
+    $newStatus = $request->status;
+    
+    $report->update(['status' => $newStatus]);
 
-        // Simpan status lama untuk audit trail
-        $oldStatus = $report->status;
-        $newStatus = $validated['status'];
+    // Pesan yang berbeda untuk setiap status
+    $messages = [
+        'menunggu' => [
+            'title' => 'Laporan Dikembalikan ke Status Menunggu',
+            'message' => "Laporan #{$report->id} telah dikembalikan ke status menunggu untuk diverifikasi ulang."
+        ],
+        'diproses' => [
+            'title' => 'Laporan Sedang Diproses',
+            'message' => "Laporan #{$report->id} sedang ditangani oleh tim terkait."
+        ],
+        'selesai' => [
+            'title' => 'Laporan Telah Selesai',
+            'message' => "Laporan #{$report->id} telah selesai ditangani. Masalah telah diatasi."
+        ]
+    ];
 
-        // Update laporan
-        $report->update([
-            'status' => $newStatus,
-            'admin_notes' => $validated['admin_notes'] ?? $report->admin_notes,
-        ]);
+    $statusMessage = $messages[$newStatus];
 
-        // Log aktivitas (bisa dikembangkan ke tabel activity_logs nanti)
-        Log::info('Status laporan diubah', [
-            'report_id' => $report->id,
-            'admin_id' => Auth::id(),
-            'admin_name' => Auth::user()->name,
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus,
-            'timestamp' => now(),
-        ]);
-
-        // Pesan sukses yang dinamis
-        $statusLabel = [
-            'menunggu' => 'Menunggu',
-            'diproses' => 'Diproses',
-            'selesai' => 'Selesai',
-        ];
-
-        return redirect()->back()->with('success', 
-            "Status laporan #{$report->id} berhasil diubah menjadi <strong>{$statusLabel[$newStatus]}</strong>."
-        );
-    }
+    return redirect()->back()->with([
+        'success' => $statusMessage['message'],
+        'status_title' => $statusMessage['title']
+    ]);
+}
 
     /**
      * Detail laporan (opsional - untuk modal atau halaman terpisah)
