@@ -3,42 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Models\FacilityCategory; // ✅ TAMBAHKAN INI!
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    /**
+     * Dashboard utama - redirect berdasarkan role
+     */
     public function index()
     {
         $user = Auth::user();
 
-        // 1. Jika Admin
+        // Jika Admin, redirect ke adminDashboard
         if ($user->role === 'admin') {
-            // Kita bungkus data dalam satu array agar rapi
-            $data = [
-                'total'    => Report::count(),
-                'menunggu' => Report::where('status', 'menunggu')->count(),
-                'proses'   => Report::where('status', 'proses')->count(),
-                'selesai'  => Report::where('status', 'selesai')->count(),
-                'reports'  => Report::latest()->take(10)->get(), // Ambil 10 terbaru
-            ];
-
-            return view('dashboard-admin', compact('data'));
-        
-        
+            return $this->adminDashboard();
         }
 
-        // 2. Jika Warga
-        $reports = Report::where('user_id', $user->id)->latest()->get();
+        // Jika Warga
+        $reports = Report::where('user_id', auth()->id())
+            ->with('category')
+            ->latest()
+            ->get();
+            
         return view('dashboard-warga', compact('reports'));
     }
 
     /**
-     * Dashboard khusus Admin - menampilkan statistik overview
+     * Dashboard khusus Admin
      */
     public function adminDashboard()
     {
-        $reports = \App\Models\Report::all();
+        $reports = Report::with(['user', 'category'])->latest()->get();
         
         $stats = [
             'total' => $reports->count(),
@@ -47,72 +44,96 @@ class DashboardController extends Controller
             'selesai' => $reports->where('status', 'selesai')->count(),
         ];
 
-        // Ambil 5 laporan terbaru untuk widget "Laporan Terbaru"
-        $recentReports = \App\Models\Report::with(['user', 'category'])
-            ->latest()
-            ->take(5)
-            ->get();
+        $recentReports = $reports->take(5);
 
         return view('dashboard-admin', compact('stats', 'recentReports', 'reports'));
     }
 
+    /**
+     * Simpan laporan baru
+     */
     public function storeReport(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'category' => 'required|exists:facility_categories,id', // Ubah ke exists
-        'location_rtrw' => 'required|string|max:100',
-        'description' => 'required|string',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    {
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'category' => 'required|string',
+                'location_rtrw' => 'required|string|max:100',
+                'description' => 'required|string',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
 
-    $photoPath = null;
-    if ($request->hasFile('photo')) {
-        $photoPath = $request->file('photo')->store('reports', 'public');
+            // Cari category by name
+            $category = FacilityCategory::where('name', $validated['category'])->first();
+            
+            if (!$category) {
+                return back()->withErrors(['category' => 'Kategori tidak ditemukan.'])->withInput();
+            }
+
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('reports', 'public');
+            }
+
+            Report::create([
+                'user_id' => auth()->id(),
+                'facility_category_id' => $category->id,
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'location_rtrw' => $validated['location_rtrw'],
+                'photo' => $photoPath,
+                'status' => 'menunggu',
+                'upvotes_count' => 0,
+            ]);
+
+            return redirect()->route('dashboard')->with('success', 'Laporan berhasil dikirim! Tim kami akan segera menindaklanjuti.');
+            
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+        }
     }
 
-    Report::create([
-        'user_id' => auth()->id(),
-        'facility_category_id' => $validated['category'], // Ubah ke facility_category_id
-        'title' => $validated['title'],
-        'description' => $validated['description'],
-        'location_rtrw' => $validated['location_rtrw'],
-        'photo' => $photoPath,
-        'status' => 'menunggu',
-        'upvotes_count' => 0,
-    ]);
-
-    return back()->with('success', 'Laporan berhasil dikirim!');
-}
-
+    /**
+     * Update status laporan
+     */
     public function updateStatus(Request $request, Report $report)
     {
         $request->validate(['status' => 'required|in:menunggu,diproses,selesai']);
         $report->update(['status' => $request->status]);
 
-        return redirect()->route('dashboard')->with('success', 'Status perkembangan laporan berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Status laporan berhasil diperbarui!');
     }
 
+    /**
+     * Upvote laporan
+     */
     public function upvote(Report $report)
     {
         $report->increment('upvotes_count');
-        return redirect()->back()->with('success', 'Terima kasih! Dukungan Anda terhadap laporan ini telah dicatat.');
+        return redirect()->back()->with('success', 'Terima kasih atas dukungan Anda!');
     }
 
+    /**
+     * Mark all notifications as read
+     */
     public function markAllRead()
     {
         auth()->user()->unreadNotifications->markAsRead();
         return back()->with('success', 'Semua notifikasi telah ditandai sebagai dibaca.');
     }
 
+    /**
+     * Manage reports (untuk admin)
+     */
     public function manageReports()
     {
-        // Pastikan hanya admin yang bisa akses
         if (auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
 
-        $reports = Report::latest()->get();
-        return view('admin.reports.index', compact('reports'));
+        $reports = Report::with(['user', 'category'])->latest()->paginate(10);
+        $categories = FacilityCategory::orderBy('name')->get();
+        
+        return view('admin.reports.index', compact('reports', 'categories'));
     }
 }
